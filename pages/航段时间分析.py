@@ -259,7 +259,7 @@ if not st.session_state.data.empty:
 else:
     st.warning('请提交表单1')
 
-st.write("## 筛选数据表")
+st.write("## 筛选数据表（可按照‘航段时间-平均空中时间’或‘航段’筛选）")
 col1, col2 = st.columns(2)
 with col1:
     with st.form(key='my_form2'):
@@ -308,7 +308,9 @@ with result1:
 
             # 按照航班总数从大到小排序新的DataFrame
             new_df = new_df.sort_values(by='航班总数', ascending=False)
-            st.write(new_df)
+            st.session.state.anadf=new_df 
+        if not st.session.state.anadf.empty:
+            st.write(st.session.state.anadf)
 
 with result2:
     stardard = st.text_input("国内航班标准航段运行时间查询", value='PEK-XIY')
