@@ -20,6 +20,7 @@ if __name__ == "__main__":
     if 'first_visit' not in st.session_state:
         st.session_state.data=pd.DataFrame([])
         st.session_state.choosedata=pd.DataFrame([])
+        st.session.state.anadf=pd.DataFrame([])
         st.session_state.stardard=pd.DataFrame([])
         st.balloons()
     else:
