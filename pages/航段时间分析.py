@@ -308,9 +308,9 @@ with result1:
 
             # 按照航班总数从大到小排序新的DataFrame
             new_df = new_df.sort_values(by='航班总数', ascending=False)
-            st.session.state.anadf=new_df 
-        if not st.session.state.anadf.empty:
-            st.write(st.session.state.anadf)
+            st.session_state.anadf.anadf=new_df 
+        if not st.session_state.anadf.empty:
+            st.write(st.session_state.anadf)
 
 with result2:
     stardard = st.text_input("国内航班标准航段运行时间查询", value='PEK-XIY')
