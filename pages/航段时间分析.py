@@ -181,7 +181,7 @@ class ana:
 st.write("## 修改滑行时间和数据表（如无需直接点击提交）")
 with st.form(key='my_form'):
     # 用户输入滑行时间
-    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=30)
+    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=0)
     source_file1=source_file2=None
     col1, col2 = st.columns(2)
     with col1:
