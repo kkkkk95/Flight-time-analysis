@@ -177,9 +177,11 @@ class ana:
         # 修改列名
         data = data.rename(columns={'Unnamed: 7': '目的地机场'})
         return data
+
+st.write("## 修改滑行时间和数据表（如无需直接点击提交）")
 with st.form(key='my_form'):
     # 用户输入滑行时间
-    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=0)
+    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=30)
     source_file1=source_file2=None
     col1, col2 = st.columns(2)
     with col1:
@@ -202,8 +204,7 @@ if not st.session_state.data.empty:
     data=st.session_state.data
     col1, col2 = st.columns(2)
     with col1:
-        st.write('航段时间过长或过短数量及占比')
-        
+        st.write("## 航段时间过长或过短数量及占比")
         # 筛选差值在不同范围内的数量
         range_counts = {
             '~-10': len(data[data['差值'] < -10]),
@@ -222,6 +223,7 @@ if not st.session_state.data.empty:
         result=df.to_excel(os.path.abspath(r'result.xlsx'))
         download_button(os.path.abspath(r'result.xlsx'), 'download')
     with col2:
+        st.write("## 柱状图展示")
         mpl.font_manager.fontManager.addfont('字体/SimHei.ttf') #临时注册新的全局字体
         plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
         plt.rcParams['axes.unicode_minus']=False#用来正常显示负号
@@ -257,7 +259,7 @@ if not st.session_state.data.empty:
 else:
     st.warning('请提交表单1')
 
-
+st.write("## 筛选数据表")
 col1, col2 = st.columns(2)
 with col1:
     with st.form(key='my_form2'):
