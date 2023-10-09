@@ -274,7 +274,7 @@ with col2:
         # 提交按钮
         submit_button3 = st.form_submit_button(label='提交')
 st.write('---------')
-st.write('筛选数据如下：')
+st.write('## 筛选数据如下：')
 result1,result2=st.columns(2)
 if submit_button2 and not st.session_state.data.empty:
     df=data[(data['差值'] >= min) & (data['差值'] < max)]
@@ -313,12 +313,13 @@ with result1:
         st.write(st.session_state.anadf)
 
 with result2:
+    st.write("### 国内航班标准航段运行时间查询")
     stardard = st.text_input("国内航班标准航段运行时间查询", value='PEK-XIY')
     if not st.session_state.stardard.empty:
         standard_df=st.session_state.stardard
         df=standard_df[standard_df['航段']==stardard]
         st.write(df)
-    if st.button('查看说明和对应机型'):
+    if st.button('查看说明'):
         text = '''1、航段运行时间基础库中所有数值均为四位数，前两位表示小时数，后两位表示分钟数。如0150，表示对应航段的运行时间为1小时50分钟。
         2、部分城市对只有单向运行的时间，待有实际航班运行数据后将及时更新。
         3、该标准实施后，若城市对不在该表内，将先由航空公司提供估算的运行时间数据，待统计分析一段时间的运行数据后，再适时加入该标准内。'''
@@ -326,7 +327,7 @@ with result2:
         st.markdown(text)
     options=['机型8(M0.8～0.89)','机型7(M0.7～0.79)','机型6(M0.6～0.69)','机型5(M0.5～0.59)','机型4(M0.4～0.49)']
     # 在应用程序中添加下拉菜单
-    selected_option = st.selectbox('选择机型', options)
+    selected_option = st.selectbox('查看机型详情', options)
     type_dic={
         '机型8(M0.8～0.89)':'B767-200 B767-300 B767F B767 B747-200 B747-300 B747-400 B747F B747-8 B747 B777-200 B777-300 B777 A340-200 A340-300 A340-600 A340 A330-200 A330-300 A330 A350 MD11F MD11 DC10F DC10 A380 B787-8 B787-9 B787',
         '机型7(M0.7～0.79)':'A318 A319 A320 A321 A300-600 A300F A300 B737-200 B737-300 B737-400 B737-500 B737-600 B737-700 B737-800 B737-900 B737 B757-200 B757-300 B757F B757 MD90 MD80 CRJ-200 ERJ190 CRJ-700 CRJ-900 EMB145 ARJ21',
