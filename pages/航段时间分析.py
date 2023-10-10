@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
 import base64
+import streamlit.components.v1 as components
 
 # 设置网页标题，以及使用宽屏模式
 st.set_page_config(
@@ -173,9 +174,6 @@ class ana:
         data['差值']=data['航段时间']-data['平均空中时间']+self.taxitime
         # 保留指定列
         data = data.loc[:, ['Flt Desg', 'Freq', 'Subfleet', 'Arvl Arp', '航段', '航段时间', '平均空中时间', '差值']]
-
-        # 修改列名
-        data = data.rename(columns={'Unnamed: 7': '目的地机场'})
         return data
 
 st.write("## 修改滑行时间和数据表（如无需直接点击提交）")
@@ -199,6 +197,8 @@ if submit_button:
     standard_df=anay.standard_df()
     st.session_state.data=data
     st.session_state.stardard=standard_df
+    st.session_state.min_value=data['差值'].min()
+    st.session_state.max_value=data['差值'].max()
 
 if not st.session_state.data.empty:
     data=st.session_state.data
@@ -223,7 +223,7 @@ if not st.session_state.data.empty:
         result=df.to_excel(os.path.abspath(r'result.xlsx'))
         download_button(os.path.abspath(r'result.xlsx'), 'download')
     with col2:
-        st.write("## 柱状图展示")
+        st.write("## 柱状图展示:过长过短航班数量及占比")
         mpl.font_manager.fontManager.addfont('字体/SimHei.ttf') #临时注册新的全局字体
         plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
         plt.rcParams['axes.unicode_minus']=False#用来正常显示负号
@@ -256,6 +256,7 @@ if not st.session_state.data.empty:
 
         # 显示图形
         st.pyplot(plt)
+
 else:
     st.warning('请提交表单1')
 
@@ -263,8 +264,9 @@ st.write("## 筛选数据表（可按照‘航段时间-平均空中时间’或
 col1, col2 = st.columns(2)
 with col1:
     with st.form(key='my_form2'):
-        min=st.number_input("航段时间-平均空中时间（最小值）", value=-10)
-        max=st.number_input("航段时间-平均空中时间（最大值）", value=60)
+        range_values = st.slider("航段时间-平均空中时间", min_value=st.session_state.min_value, max_value=st.session_state.max_value, value=(-10.0, 10.0), format="%.2f")
+        min = range_values[0]
+        max = range_values[1]
         # 提交按钮
         submit_button2 = st.form_submit_button(label='提交')
     
