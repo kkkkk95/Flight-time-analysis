@@ -22,6 +22,8 @@ if __name__ == "__main__":
         st.session_state.choosedata=pd.DataFrame([])
         st.session_state.anadf=pd.DataFrame([])
         st.session_state.stardard=pd.DataFrame([])
+        st.session_state.min_value=-100.0
+        st.session_state.max_value=100.0
         st.balloons()
     else:
         st.session_state.first_visit=False
