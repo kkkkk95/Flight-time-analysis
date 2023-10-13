@@ -244,23 +244,23 @@ if not st.session_state.data.empty:
         long_df = df[-n:]
         st.write(short_df,mid_df,long_df)
         # 绘制蓝色柱子
-        plt.bar(short_df.index, short_df['占比'], color='blue')
+        plt.bar(short_df.index - 0.2, short_df['占比'], width=0.4, color='blue')
         
         # 绘制绿色柱子
-        plt.bar(mid_df.index, mid_df['占比'], color='green')
+        plt.bar(mid_df.index, mid_df['占比'], width=0.4, color='green')
         
         # 绘制红色柱子
-        plt.bar(long_df.index, long_df['占比'], color='red')
+        plt.bar(long_df.index + 0.2, long_df['占比'], width=0.4, color='red')
         
         # 添加标注
         for i, value in enumerate(short_df['数量']):
-            plt.text(i, short_df['占比'][i], f"{value}", ha='center', va='bottom', color='blue')
+            plt.text(i - 0.2, short_df['占比'][i], f"{value}", ha='center', va='bottom', color='blue')
         
         for i, value in enumerate(mid_df['数量']):
-            plt.text(i + 3, mid_df['占比'][i], f"{value}", ha='center', va='bottom', color='green')
+            plt.text(i, mid_df['占比'][i], f"{value}", ha='center', va='bottom', color='green')
         
         for i, value in enumerate(long_df['数量']):
-            plt.text(i + 6, long_df['占比'][i], f"{value}", ha='center', va='bottom', color='red')
+            plt.text(i + 0.2, long_df['占比'][i], f"{value}", ha='center', va='bottom', color='red')
         
         # 添加标注说明
         plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'),
