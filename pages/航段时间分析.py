@@ -203,56 +203,69 @@ if submit_button:
 if not st.session_state.data.empty:
     data=st.session_state.data
     col1, col2 = st.columns(2)
+    with st.form(key='my_form2'):
+    col1, col2 = st.columns(2)
+
+    # 在第一列中添加内容
     with col1:
-        st.write("## 航段时间过长或过短数量及占比")
-        # 筛选差值在不同范围内的数量
-        range_counts = {
-            '~-10': len(data[data['差值'] < -10]),
-            '-10~0': len(data[(data['差值'] >= -10) & (data['差值'] < 0)]),
-            '0~10': len(data[(data['差值'] >= 0) & (data['差值'] < 10)]),
-            '40~50': len(data[(data['差值'] >= 40) & (data['差值'] < 50)]),
-            '50~60': len(data[(data['差值'] >= 50) & (data['差值'] < 60)]),
-            '60~': len(data[data['差值'] >= 60])
-        }
-        # 创建DataFrame
-        df = pd.DataFrame.from_dict(range_counts, orient='index', columns=['数量'])
-        df['占比'] = df['数量'] / len(data) * 100
+        st.write("## 航段时间分组统计")
+
+        # 创建新的 DataFrame
+        # 获取最小值和最大值
+        min_value = st.session_state.min_value
+        max_value = st.session_state.max_value
+        
+        # 计算分组范围
+        start_range = min_value - (min_value % 10)
+        end_range = max_value + 10 - (max_value % 10)
+        groups = np.arange(start_range, end_range + 10, 10)
+
+        # 计算每个分组的数量
+        group_counts = data['范围'].value_counts().sort_index()
+
+        # 更新新 DataFrame 的数量列
+        df_groups['数量'] = group_counts.values
 
         # 显示DataFrame
-        st.dataframe(df)
-        result=df.to_excel(os.path.abspath(r'result.xlsx'))
+        st.dataframe(df_groups)
+
+        # 导出为Excel文件
+        result = df_groups.to_excel(os.path.abspath(r'result.xlsx'))
         download_button(os.path.abspath(r'result.xlsx'), 'download')
+
+    # 在第二列中添加内容
     with col2:
-        st.write("## 柱状图展示:过长过短航班数量及占比")
-        mpl.font_manager.fontManager.addfont('字体/SimHei.ttf') #临时注册新的全局字体
-        plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
-        plt.rcParams['axes.unicode_minus']=False#用来正常显示负号
+        st.write("## 柱状图展示:航段时间分组统计")
+        mpl.font_manager.fontManager.addfont('字体/SimHei.ttf')  # 临时注册新的全局字体
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+        plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
         # 设置图形大小
-        plt.figure(figsize=(5, 4))
+        plt.figure(figsize=(8, 6))
 
-        # 切片选择左侧和右侧数据
-        short_df = df[:3]
-        long_df = df[3:]
+        # 分成三个范围组
+        short_df = df_groups.loc[df_groups['范围'].str.contains('-10|0')]
+        mid_df = df_groups.loc[df_groups['范围'].str.contains('40|50')]
+        long_df = df_groups.loc[~df_groups['范围'].str.contains('-10|0|40|50')]
 
-        # 绘制蓝色柱子
-        plt.bar(short_df.index, short_df['占比'], color='blue')
-
-        # 绘制红色柱子
-        plt.bar(long_df.index, long_df['占比'], color='red')
+        # 绘制柱状图，使用不同颜色
+        plt.bar(short_df['范围'], short_df['数量'], color='blue')
+        plt.bar(mid_df['范围'], mid_df['数量'], color='green')
+        plt.bar(long_df['范围'], long_df['数量'], color='red')
 
         # 添加标注
         for i, value in enumerate(short_df['数量']):
-            plt.text(i, short_df['占比'][i], f"{value}\n{short_df['占比'][i]:.2f}%", ha='center', va='bottom', color='blue')
+            plt.text(i, value, f"{value}", ha='center', va='bottom', color='blue')
+
+        for i, value in enumerate(mid_df['数量']):
+            plt.text(i + len(short_df), value, f"{value}", ha='center', va='bottom', color='green')
 
         for i, value in enumerate(long_df['数量']):
-            plt.text(i+3, long_df['占比'][i], f"{value}\n{long_df['占比'][i]:.2f}%", ha='center', va='bottom', color='red')
-        # 添加标注说明
-        plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'), plt.bar(0, 0, color='red', label='过长')], loc='upper left')
+            plt.text(i + len(short_df) + len(mid_df), value, f"{value}", ha='center', va='bottom', color='red')
 
         # 设置标题和轴标签
-        plt.title("过长过短航班数量及占比")
+        plt.title("航段时间分组统计")
         plt.xlabel("范围")
-        plt.ylabel("百分比%")
+        plt.ylabel("数量")
 
         # 显示图形
         st.pyplot(plt)
