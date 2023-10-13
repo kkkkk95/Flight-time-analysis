@@ -171,7 +171,7 @@ class ana:
         data2=self.avgtime()
         data=pd.merge(data1,data2,on='航段',how='outer')
         data = data.dropna(subset=['Flt Desg'])
-        data['差值']=data['航段时间']-data['平均空中时间']+self.taxitime
+        data['差值']=data['航段时间']-data['平均空中时间']-self.taxitime
         # 保留指定列
         data = data.loc[:, ['Flt Desg', 'Freq', 'Subfleet', 'Arvl Arp', '航段', '航段时间', '平均空中时间', '差值']]
         return data
@@ -179,7 +179,7 @@ class ana:
 st.write("## 修改滑行时间和数据表（如无需直接点击提交）")
 with st.form(key='my_form'):
     # 用户输入滑行时间
-    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=0)
+    taxitime = st.number_input("输入滑行时间（分钟）", min_value=0, step=1, value=30)
     source_file1=source_file2=None
     col1, col2 = st.columns(2)
     with col1:
@@ -262,34 +262,29 @@ else:
 
 st.write("## 筛选数据表（可按照‘航段时间-平均空中时间’或‘航段’筛选）")
 col1, col2 = st.columns(2)
-with col1:
-    with st.form(key='my_form2'):
+with st.form(key='my_form2'):
+    with col1:
         range_values = st.slider("航段时间-平均空中时间", min_value=st.session_state.min_value, max_value=st.session_state.max_value, value=(-10.0, 10.0), format="%.2f")
         min = range_values[0]
         max = range_values[1]
+    with col2:
+        offport = st.text_input("起飞机场三字码") + '-'
+        onport = '-' + st.text_input("落地机场三字码")
         # 提交按钮
         submit_button2 = st.form_submit_button(label='提交')
-    
-with col2:
-    with st.form(key='my_form3'):
-        hangduan = st.text_input("航段查询", value='PEK-LAX')
-        # 提交按钮
-        submit_button3 = st.form_submit_button(label='提交')
 st.write('---------')
 st.write('## 筛选数据如下：')
-result1,result2=st.columns(2)
+
 if submit_button2 and not st.session_state.data.empty:
-    df=data[(data['差值'] >= min) & (data['差值'] < max)]
-    st.session_state.choosedata=df
-elif submit_button3 and not st.session_state.data.empty:
-    df=data[(data['航段'] == hangduan)]
+    condition = (data['差值'].between(min, max)) & ((data['航段'].str.contains(offport)) & (data['航段'].str.contains(onport)))
+    df = data[condition]
     st.session_state.choosedata=df
 elif st.session_state.choosedata.empty:
     st.warning('未选择筛选条件')
 else:
     pass
 
-
+result1,result2=st.columns(2)
 with result1:
     if not st.session_state.choosedata.empty:
         st.write(st.session_state.choosedata)
@@ -315,12 +310,15 @@ with result1:
         st.write(st.session_state.anadf)
 
 with result2:
-    st.write("### 国内航班标准航段运行时间查询")
-    stardard = st.text_input("国内航班标准航段运行时间查询", value='PEK-XIY')
-    if not st.session_state.stardard.empty:
-        standard_df=st.session_state.stardard
-        df=standard_df[standard_df['航段']==stardard]
-        st.write(df)
+    st.write("### 国内航班标准航段运行时间")
+    if not st.session_state.stardard.empty and not st.session_state.choosedata.empty:
+        if len(offport)>2 and len(onport)>2:
+            stardard=offport[:-1]+onport
+            standard_df=st.session_state.stardard
+            df=standard_df[standard_df['航段']==stardard]
+            st.write(df)
+        else:
+            st.write('无相关数据')
     if st.button('查看说明'):
         text = '''1、航段运行时间基础库中所有数值均为四位数，前两位表示小时数，后两位表示分钟数。如0150，表示对应航段的运行时间为1小时50分钟。
         2、部分城市对只有单向运行的时间，待有实际航班运行数据后将及时更新。
