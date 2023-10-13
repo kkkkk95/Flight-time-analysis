@@ -221,7 +221,6 @@ if not st.session_state.data.empty:
         for i in range(start_range + 10, end_range, 10):
             range_counts[f"{i}~{i + 10}"] = len(data[(data['差值'] >= i) & (data['差值'] < i + 10)])
         
-        range_counts[f"{end_range}~{max_value}"] = len(data[(data['差值'] >= end_range) & (data['差值'] <= max_value)])
         # 创建DataFrame
         df = pd.DataFrame.from_dict(range_counts, orient='index', columns=['数量'])
         df['占比'] = df['数量'] / len(data) * 100
@@ -255,13 +254,13 @@ if not st.session_state.data.empty:
         
         # 添加标注
         for i, value in enumerate(short_df['数量']):
-            plt.text(i, short_df['占比'][i], f"{value}\n{short_df['占比'][i]:.2f}%", ha='center', va='bottom', color='blue')
+            plt.text(i, short_df['占比'][i], f"{value}", ha='center', va='bottom', color='blue')
         
         for i, value in enumerate(mid_df['数量']):
-            plt.text(i + 3, mid_df['占比'][i], f"{value}\n{mid_df['占比'][i]:.2f}%", ha='center', va='bottom', color='green')
+            plt.text(i + 3, mid_df['占比'][i], f"{value}", ha='center', va='bottom', color='green')
         
         for i, value in enumerate(long_df['数量']):
-            plt.text(i + 6, long_df['占比'][i], f"{value}\n{long_df['占比'][i]:.2f}%", ha='center', va='bottom', color='red')
+            plt.text(i + 6, long_df['占比'][i], f"{value}", ha='center', va='bottom', color='red')
         
         # 添加标注说明
         plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'),
