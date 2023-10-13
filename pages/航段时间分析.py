@@ -260,16 +260,16 @@ if not st.session_state.data.empty:
 else:
     st.warning('请提交表单1')
 
-st.write("## 筛选数据表（可按照‘航段时间-平均空中时间’或‘航段’筛选）")
-col1, col2 = st.columns(2)
+st.write("## 筛选数据表（可按照‘航段时间-平均空中时间’和‘起落机场三字码’筛选）")
 with st.form(key='my_form2'):
+    col1, col2 = st.columns(2)
     with col1:
         range_values = st.slider("航段时间-平均空中时间", min_value=st.session_state.min_value, max_value=st.session_state.max_value, value=(-10.0, 10.0), format="%.2f")
         min = range_values[0]
         max = range_values[1]
     with col2:
-        offport = st.text_input("起飞机场三字码") + '-'
-        onport = '-' + st.text_input("落地机场三字码")
+        offport = st.text_input("起飞机场三字码").upper() + '-'
+        onport = '-' + st.text_input("落地机场三字码").upper()
     # 提交按钮
     submit_button2 = st.form_submit_button(label='提交')
 st.write('---------')
