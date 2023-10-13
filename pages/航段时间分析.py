@@ -313,7 +313,7 @@ with result2:
     st.write("### 国内航班标准航段运行时间")
     if not st.session_state.stardard.empty and not st.session_state.choosedata.empty:
         if len(offport)>2 and len(onport)>2:
-            stardard=offport[:-1]+onport
+            stardard=offport[:-1].upper()+'-'+onport[1:].upper()
             standard_df=st.session_state.stardard
             df=standard_df[standard_df['航段']==stardard]
             st.write(df)
