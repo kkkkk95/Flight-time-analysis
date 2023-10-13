@@ -270,8 +270,8 @@ with st.form(key='my_form2'):
     with col2:
         offport = st.text_input("起飞机场三字码") + '-'
         onport = '-' + st.text_input("落地机场三字码")
-        # 提交按钮
-        submit_button2 = st.form_submit_button(label='提交')
+    # 提交按钮
+    submit_button2 = st.form_submit_button(label='提交')
 st.write('---------')
 st.write('## 筛选数据如下：')
 
