@@ -223,7 +223,7 @@ if not st.session_state.data.empty:
         
         # 创建DataFrame
         df = pd.DataFrame.from_dict(range_counts, orient='index', columns=['数量'])
-        df['占比'] = df['数量'] / len(data) * 100
+        df['占比(%)'] = (df['数量'] / len(data) * 100).round(2)
 
         # 显示DataFrame
         st.dataframe(df)
@@ -300,7 +300,10 @@ st.write('---------')
 st.write('## 筛选数据如下：')
 
 if submit_button2 and not st.session_state.data.empty:
-    condition = (data['差值'].between(min, max)) & ((data['航段'].str.contains(offport)) & (data['航段'].str.contains(onport)))
+    if offport[:-1]!=onport[1:]:
+        condition = (data['差值'].between(min, max)) & ((data['航段'].str.contains(offport)) & (data['航段'].str.contains(onport)))
+    else:
+        condition = (data['差值'].between(min, max)) & ((data['航段'].str.contains(offport)) | (data['航段'].str.contains(onport)))
     df = data[condition]
     st.session_state.choosedata=df
 elif st.session_state.choosedata.empty:
