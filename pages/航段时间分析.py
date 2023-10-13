@@ -205,65 +205,62 @@ if not st.session_state.data.empty:
     col1, col2 = st.columns(2)
     # 在第一列中添加内容
     with col1:
-        st.write("## 航段时间分组统计")
-
-        # 创建新的 DataFrame
+        st.write("## 航段时间过长或过短数量及占比")
         # 获取最小值和最大值
         min_value = st.session_state.min_value
         max_value = st.session_state.max_value
         
-        # 修改分组范围计算方式
+        # 计算范围边界
         start_range = min_value - (min_value % 10)
         end_range = max_value - (max_value % 10) + 10
-        groups = np.arange(start_range, end_range + 10, 10)
         
-        # 使用 pd.cut 进行分组
-        data['范围'] = pd.cut(data['差值'], bins=groups, labels=df_groups['范围'][:-1], right=False).astype(str)
+        # 更新范围字典
+        range_counts = {}
+        range_counts[f"{start_range}~{start_range + 10}"] = len(data[(data['差值'] >= start_range) & (data['差值'] < start_range + 10)])
         
-        # 计算每个分组的数量
-        group_counts = data['范围'].value_counts().sort_index().reset_index()
-        group_counts.columns = ['范围', '数量']
+        for i in range(start_range + 10, end_range, 10):
+            range_counts[f"{i}~{i + 10}"] = len(data[(data['差值'] >= i) & (data['差值'] < i + 10)])
+        
+        range_counts[f"{end_range}~{max_value}"] = len(data[(data['差值'] >= end_range) & (data['差值'] <= max_value)])
+        # 创建DataFrame
+        df = pd.DataFrame.from_dict(range_counts, orient='index', columns=['数量'])
+        df['占比'] = df['数量'] / len(data) * 100
 
         # 显示DataFrame
-        st.dataframe(df_groups)
-
-        # 导出为Excel文件
-        result = df_groups.to_excel(os.path.abspath(r'result.xlsx'))
+        st.dataframe(df)
+        result=df.to_excel(os.path.abspath(r'result.xlsx'))
         download_button(os.path.abspath(r'result.xlsx'), 'download')
-
-    # 在第二列中添加内容
     with col2:
-        st.write("## 柱状图展示:航段时间分组统计")
-        mpl.font_manager.fontManager.addfont('字体/SimHei.ttf')  # 临时注册新的全局字体
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
-        plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+        st.write("## 柱状图展示:过长过短航班数量及占比")
+        mpl.font_manager.fontManager.addfont('字体/SimHei.ttf') #临时注册新的全局字体
+        plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
+        plt.rcParams['axes.unicode_minus']=False#用来正常显示负号
         # 设置图形大小
-        plt.figure(figsize=(8, 6))
+        plt.figure(figsize=(5, 4))
 
-        # 分成三个范围组
-        short_df = df_groups.loc[df_groups['范围'].str.contains('-10|0')]
-        mid_df = df_groups.loc[df_groups['范围'].str.contains('40|50')]
-        long_df = df_groups.loc[~df_groups['范围'].str.contains('-10|0|40|50')]
+        # 切片选择左侧和右侧数据
+        short_df = df[:3]
+        long_df = df[3:]
 
-        # 绘制柱状图，使用不同颜色
-        plt.bar(short_df['范围'], short_df['数量'], color='blue')
-        plt.bar(mid_df['范围'], mid_df['数量'], color='green')
-        plt.bar(long_df['范围'], long_df['数量'], color='red')
+        # 绘制蓝色柱子
+        plt.bar(short_df.index, short_df['占比'], color='blue')
+
+        # 绘制红色柱子
+        plt.bar(long_df.index, long_df['占比'], color='red')
 
         # 添加标注
         for i, value in enumerate(short_df['数量']):
-            plt.text(i, value, f"{value}", ha='center', va='bottom', color='blue')
-
-        for i, value in enumerate(mid_df['数量']):
-            plt.text(i + len(short_df), value, f"{value}", ha='center', va='bottom', color='green')
+            plt.text(i, short_df['占比'][i], f"{value}\n{short_df['占比'][i]:.2f}%", ha='center', va='bottom', color='blue')
 
         for i, value in enumerate(long_df['数量']):
-            plt.text(i + len(short_df) + len(mid_df), value, f"{value}", ha='center', va='bottom', color='red')
+            plt.text(i+3, long_df['占比'][i], f"{value}\n{long_df['占比'][i]:.2f}%", ha='center', va='bottom', color='red')
+        # 添加标注说明
+        plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'), plt.bar(0, 0, color='red', label='过长')], loc='upper left')
 
         # 设置标题和轴标签
-        plt.title("航段时间分组统计")
+        plt.title("过长过短航班数量及占比")
         plt.xlabel("范围")
-        plt.ylabel("数量")
+        plt.ylabel("百分比%")
 
         # 显示图形
         st.pyplot(plt)
