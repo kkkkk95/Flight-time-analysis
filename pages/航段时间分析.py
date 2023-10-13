@@ -203,9 +203,6 @@ if submit_button:
 if not st.session_state.data.empty:
     data=st.session_state.data
     col1, col2 = st.columns(2)
-    with st.form(key='my_form2'):
-    col1, col2 = st.columns(2)
-
     # 在第一列中添加内容
     with col1:
         st.write("## 航段时间分组统计")
