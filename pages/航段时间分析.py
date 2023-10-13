@@ -218,7 +218,7 @@ if not st.session_state.data.empty:
         groups = np.arange(start_range, end_range + 10, 10)
         
         # 使用 pd.cut 进行分组
-        data['范围'] = pd.cut(data['差值'], bins=groups, labels=df_groups['范围'], right=False).astype(str)
+        data['范围'] = pd.cut(data['差值'], bins=groups, labels=df_groups['范围'][:-1], right=False).astype(str)
         
         # 计算每个分组的数量
         group_counts = data['范围'].value_counts().sort_index().reset_index()
