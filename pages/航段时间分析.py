@@ -212,16 +212,17 @@ if not st.session_state.data.empty:
         min_value = st.session_state.min_value
         max_value = st.session_state.max_value
         
-        # 计算分组范围
+        # 修改分组范围计算方式
         start_range = min_value - (min_value % 10)
-        end_range = max_value + 10 - (max_value % 10)
+        end_range = max_value - (max_value % 10) + 10
         groups = np.arange(start_range, end_range + 10, 10)
-
+        
+        # 使用 pd.cut 进行分组
+        data['范围'] = pd.cut(data['差值'], bins=groups, labels=df_groups['范围'], right=False).astype(str)
+        
         # 计算每个分组的数量
-        group_counts = data['范围'].value_counts().sort_index()
-
-        # 更新新 DataFrame 的数量列
-        df_groups['数量'] = group_counts.values
+        group_counts = data['范围'].value_counts().sort_index().reset_index()
+        group_counts.columns = ['范围', '数量']
 
         # 显示DataFrame
         st.dataframe(df_groups)
