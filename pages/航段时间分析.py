@@ -239,10 +239,10 @@ if not st.session_state.data.empty:
         plt.figure(figsize=(5, 4))
 
         # 切片选择不同范围的数据
-        n=-((max_value - (max_value % 10) + 10)/10-4)
-        short_df = df[:n-3]
-        mid_df = df[n-3:n]
-        long_df = df[n:]
+        n=int((max_value - (max_value % 10) + 10)/10-4)
+        short_df = df[:-n-3]
+        mid_df = df[-n-3:-n]
+        long_df = df[-n:]
         
         # 绘制蓝色柱子
         plt.bar(short_df.index, short_df['占比'], color='blue')
