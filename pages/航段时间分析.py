@@ -316,9 +316,10 @@ with result2:
             stardard=offport[:-1].upper()+'-'+onport[1:].upper()
             standard_df=st.session_state.stardard
             df=standard_df[standard_df['航段']==stardard]
-            st.write(df)
-        else:
-            st.write('无相关数据')
+            if not df.empty:
+                st.write(df)
+            else:
+                st.write('无相关数据')
     if st.button('查看说明'):
         text = '''1、航段运行时间基础库中所有数值均为四位数，前两位表示小时数，后两位表示分钟数。如0150，表示对应航段的运行时间为1小时50分钟。
         2、部分城市对只有单向运行的时间，待有实际航班运行数据后将及时更新。
