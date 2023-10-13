@@ -242,7 +242,7 @@ if not st.session_state.data.empty:
         short_df = df[:-n-3]
         mid_df = df[-n-3:-n]
         long_df = df[-n:]
-        
+        st.write(short_df,mid_df,long_df)
         # 绘制蓝色柱子
         plt.bar(short_df.index, short_df['占比'], color='blue')
         
