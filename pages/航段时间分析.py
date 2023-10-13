@@ -243,13 +243,13 @@ if not st.session_state.data.empty:
         mid_df = df[-n-3:-n]
         long_df = df[-n:]
         # 绘制蓝色柱子
-        plt.bar(short_df.index - 0.2, short_df['占比'], width=0.4, color='blue')
+        plt.bar(short_df.index, short_df['占比'], width=0.4, color='blue')
         
         # 绘制绿色柱子
         plt.bar(mid_df.index, mid_df['占比'], width=0.4, color='green')
         
         # 绘制红色柱子
-        plt.bar(long_df.index + 0.2, long_df['占比'], width=0.4, color='red')
+        plt.bar(long_df.index, long_df['占比'], width=0.4, color='red')
         
         # 添加标注
         for i, value in enumerate(short_df['数量']):
