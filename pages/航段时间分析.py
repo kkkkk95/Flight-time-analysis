@@ -238,30 +238,45 @@ if not st.session_state.data.empty:
         # 设置图形大小
         plt.figure(figsize=(5, 4))
 
-        # 切片选择左侧和右侧数据
-        short_df = df[:3]
-        long_df = df[3:]
-
+        # 切片选择不同范围的数据
+        n=-((max_value - (max_value % 10) + 10)/10-4)
+        short_df = df[:n-3]
+        mid_df = df[n-3:n]
+        long_df = df[n:]
+        
         # 绘制蓝色柱子
         plt.bar(short_df.index, short_df['占比'], color='blue')
-
+        
+        # 绘制绿色柱子
+        plt.bar(mid_df.index, mid_df['占比'], color='green')
+        
         # 绘制红色柱子
         plt.bar(long_df.index, long_df['占比'], color='red')
-
+        
         # 添加标注
         for i, value in enumerate(short_df['数量']):
             plt.text(i, short_df['占比'][i], f"{value}\n{short_df['占比'][i]:.2f}%", ha='center', va='bottom', color='blue')
-
+        
+        for i, value in enumerate(mid_df['数量']):
+            plt.text(i + 3, mid_df['占比'][i], f"{value}\n{mid_df['占比'][i]:.2f}%", ha='center', va='bottom', color='green')
+        
         for i, value in enumerate(long_df['数量']):
-            plt.text(i+3, long_df['占比'][i], f"{value}\n{long_df['占比'][i]:.2f}%", ha='center', va='bottom', color='red')
+            plt.text(i + 6, long_df['占比'][i], f"{value}\n{long_df['占比'][i]:.2f}%", ha='center', va='bottom', color='red')
+        
         # 添加标注说明
-        plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'), plt.bar(0, 0, color='red', label='过长')], loc='upper left')
-
+        plt.legend(handles=[plt.bar(0, 0, color='blue', label='过短'),
+                            plt.bar(0, 0, color='green', label='中等'),
+                            plt.bar(0, 0, color='red', label='过长')],
+                   loc='upper left')
+        
         # 设置标题和轴标签
         plt.title("过长过短航班数量及占比")
         plt.xlabel("范围")
         plt.ylabel("百分比%")
-
+        
+        # 旋转横轴标签
+        plt.xticks(rotation='vertical')
+        
         # 显示图形
         st.pyplot(plt)
 
