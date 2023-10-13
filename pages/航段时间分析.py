@@ -320,6 +320,12 @@ with result1:
         # 创建新的DataFrame用于存储航段和航班总数
         new_df = pd.DataFrame(columns=['航段', '航班总数'])
         df=st.session_state.choosedata
+        # 显示DataFrame的数据总数
+        st.write("数据总数:", len(df))
+        # 计算"差值"列的平均值
+        average_diff = df['差值'].mean()
+        # 显示"差值"列的平均值
+        st.write("差值平均值:", average_diff)
         if st.button('每周受影响航班量分析'):
             # 遍历每个航段，计算航班总数并添加到新的DataFrame中
             for segment in df['航段'].unique():
