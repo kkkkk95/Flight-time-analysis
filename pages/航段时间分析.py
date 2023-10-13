@@ -211,8 +211,8 @@ if not st.session_state.data.empty:
         max_value = st.session_state.max_value
         
         # 计算范围边界
-        start_range = min_value - (min_value % 10)
-        end_range = max_value - (max_value % 10) + 10
+        start_range = int(min_value - (min_value % 10))
+        end_range = int(max_value - (max_value % 10) + 10)
         
         # 更新范围字典
         range_counts = {}
