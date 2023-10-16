@@ -90,13 +90,24 @@ class ana2:
 
         # 显示新的DataFrame
         return grouped_df
-
+    def report(self):
+        df=self.reading()
+        report_df=df.groupby(['签派员姓名']).agg({'实际落地剩油平均值': 'mean', '实际落地剩油可飞行时间平均值': 'mean'})
+        return report_df
 st.write("## 平均落地剩油")
 source_file1 = st.file_uploader("上传文件：")
 if source_file1 is not None:
     anay=ana2(source_file1,st)
     grouped_df=anay.reading()
-    st.write(grouped_df)
+    report_df=anay.report()
+    result1,result2=st.columns(2)
+    with result1:
+        st.write('总览')
+        st.write(grouped_df)
+    with result2:
+        st.write('报告')
+        st.write(report_df)
+        
     with st.form(key='my_form'):
         st.write('筛选条件')
         # 获取唯一的签派员姓名
