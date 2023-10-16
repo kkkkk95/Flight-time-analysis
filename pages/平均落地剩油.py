@@ -97,19 +97,20 @@ if source_file1 is not None:
     anay=ana2(source_file1,st)
     grouped_df=anay.reading()
     st.write(grouped_df)
+    with st.form(key='my_form'):
+        st.write('筛选条件')
+        # 获取唯一的签派员姓名
+        unique_names = grouped_df['签派员姓名'].unique()
+        # 创建下拉菜单
+        selected_name = st.selectbox("选择签派员姓名", options=unique_names)
+        filtered_df = grouped_df[grouped_df['签派员姓名'] == selected_name]
+        # 提交按钮
+        submit_button = st.form_submit_button(label='提交')
+    if submit_button:
+        st.write(filtered_df)
         
 else:
     st.warning('未上传文件')
 
-with st.form(key='my_form'):
-    st.write('筛选条件')
-    # 获取唯一的签派员姓名
-    unique_names = grouped_df['签派员姓名'].unique()
-    # 创建下拉菜单
-    selected_name = st.selectbox("选择签派员姓名", options=unique_names)
-    filtered_df = grouped_df[grouped_df['签派员姓名'] == selected_name]
-    # 提交按钮
-    submit_button = st.form_submit_button(label='提交')
-if submit_button:
-    st.write(filtered_df)
+
 
