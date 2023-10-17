@@ -115,10 +115,16 @@ if source_file1 is not None:
         checked = st.checkbox("是否按照机型细分")
         if checked:
             st.write(grouped_df)
+            result=grouped_df.to_excel(os.path.abspath(r'result.xlsx'))
+            download_button(os.path.abspath(r'result.xlsx'), 'download')
         else:
             st.write(report_df)
+            result=report_df.to_excel(os.path.abspath(r'result.xlsx'))
+            download_button(os.path.abspath(r'result.xlsx'), 'download')
     else:
         st.write(report_df)
+        result=report_df.to_excel(os.path.abspath(r'result.xlsx'))
+        download_button(os.path.abspath(r'result.xlsx'), 'download')
         
     with st.form(key='my_form'):
         st.write('筛选条件')
