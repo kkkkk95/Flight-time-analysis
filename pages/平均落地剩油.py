@@ -76,13 +76,14 @@ class ana2:
         self.key=0
     def reading(self):
         df=pd.read_excel(self.source_file1)
-        # 去除逗号
-        df['计划落地剩油'] = df['计划落地剩油'].str.replace(',', '')
-        df['实际落地剩油'] = df['实际落地剩油'].str.replace(',', '')
-        # 将列转换为数字类型
-        df['计划落地剩油'] = df['计划落地剩油'].astype(float)
-        df['实际落地剩油'] = df['实际落地剩油'].astype(float)
-        df['实际落地剩油可飞行时间'] = df['实际落地剩油可飞行时间'].astype(float)
+        if '实际落地剩油'  and '实际落地剩油可飞行时间' in df.columns:
+            # 去除逗号
+            # df['计划落地剩油'] = df['计划落地剩油'].str.replace(',', '')
+            df['实际落地剩油'] = df['实际落地剩油'].str.replace(',', '')
+            # 将列转换为数字类型
+            # df['计划落地剩油'] = df['计划落地剩油'].astype(float)
+            df['实际落地剩油'] = df['实际落地剩油'].astype(float)
+            df['实际落地剩油可飞行时间'] = df['实际落地剩油可飞行时间'].astype(float)
         # 按照签派员姓名和机型对DataFrame进行分组，并计算平均值
         if '机型' in df.columns:
             grouped_df = df.groupby(['签派员姓名', '机型']).agg({'实际落地剩油': 'mean', '实际落地剩油可飞行时间': 'mean'})
