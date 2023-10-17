@@ -89,7 +89,7 @@ class ana2:
             grouped_df = df.groupby(['签派员姓名', '机型']).agg({'实际落地剩油': 'mean', '实际落地剩油可飞行时间': 'mean'})
             self.key=1
         else:
-            grouped_df = df.groupby(['签派员姓名']).agg({'实际落地剩油平均值': 'mean', '实际落地剩油可飞行时间': 'mean'})
+            grouped_df = df.groupby(['签派员姓名']).agg({'实际落地剩油': 'mean', '实际落地剩油可飞行时间': 'mean'})
         grouped_df = grouped_df.rename(columns={'实际落地剩油': '实际落地剩油平均值', '实际落地剩油可飞行时间': '实际落地剩油可飞行时间平均值'})
         # 重置索引
         grouped_df = grouped_df.reset_index()
