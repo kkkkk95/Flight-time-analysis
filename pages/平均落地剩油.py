@@ -73,6 +73,7 @@ class ana2:
     def __init__(self,source_file1,st):        
         self.source_file1 = source_file1
         self.st=st
+        self.key=0
     def reading(self):
         df=pd.read_excel(self.source_file1)
         # 去除逗号
@@ -83,7 +84,11 @@ class ana2:
         df['实际落地剩油'] = df['实际落地剩油'].astype(float)
         df['实际落地剩油可飞行时间'] = df['实际落地剩油可飞行时间'].astype(float)
         # 按照签派员姓名和机型对DataFrame进行分组，并计算平均值
-        grouped_df = df.groupby(['签派员姓名', '机型']).agg({'实际落地剩油': 'mean', '实际落地剩油可飞行时间': 'mean'})
+        if '机型' in df.columns:
+            grouped_df = df.groupby(['签派员姓名', '机型']).agg({'实际落地剩油': 'mean', '实际落地剩油可飞行时间': 'mean'})
+            self.key=1
+        else:
+            grouped_df = df.groupby(['签派员姓名']).agg({'实际落地剩油平均值': 'mean', '实际落地剩油可飞行时间平均值': 'mean'})
         grouped_df = grouped_df.rename(columns={'实际落地剩油': '实际落地剩油平均值', '实际落地剩油可飞行时间': '实际落地剩油可飞行时间平均值'})
         # 重置索引
         grouped_df = grouped_df.reset_index()
@@ -92,20 +97,26 @@ class ana2:
         return grouped_df
     def report(self):
         df=self.reading()
-        report_df=df.groupby(['签派员姓名']).agg({'实际落地剩油平均值': 'mean', '实际落地剩油可飞行时间平均值': 'mean'})
+        if self.key==1:
+            report_df=df.groupby(['签派员姓名']).agg({'实际落地剩油平均值': 'mean', '实际落地剩油可飞行时间平均值': 'mean'})
+        else:
+            report_df=df
         return report_df
 st.write("## 平均落地剩油")
+st.markdown('<span style="color:red;">请注意上传文件需要有（签派员姓名/实际落地剩油/实际落地剩油可飞行时间）</span>', unsafe_allow_html=True)
 source_file1 = st.file_uploader("上传文件：")
 if source_file1 is not None:
     anay=ana2(source_file1,st)
     grouped_df=anay.reading()
     report_df=anay.report()
-    result1,result2=st.columns(2)
-    with result1:
-        st.write('总览')
-        st.write(grouped_df)
-    with result2:
-        st.write('报告')
+    jud=anay.key
+    if jud==1:
+        checked = st.checkbox("是否按照机型细分")
+        if checked:
+            st.write(grouped_df)
+        else:
+            st.write(report_df)
+    else:
         st.write(report_df)
         
     with st.form(key='my_form'):
